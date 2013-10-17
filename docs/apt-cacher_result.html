@@ -1,0 +1,1838 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <title>apt-cacherでの改善結果</title>
+    <style type="text/css">/*
+Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.6.0
+*/
+html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}del,ins{text-decoration:none;}body{font:13px/1.231 arial,helvetica,clean,sans-serif;*font-size:small;*font:x-small;}select,input,button,textarea{font:99% arial,helvetica,clean,sans-serif;}table{font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}body{text-align:center;}#ft{clear:both;}#doc,#doc2,#doc3,#doc4,.yui-t1,.yui-t2,.yui-t3,.yui-t4,.yui-t5,.yui-t6,.yui-t7{margin:auto;text-align:left;width:57.69em;*width:56.25em;min-width:750px;}#doc2{width:73.076em;*width:71.25em;}#doc3{margin:auto 10px;width:auto;}#doc4{width:74.923em;*width:73.05em;}.yui-b{position:relative;}.yui-b{_position:static;}#yui-main .yui-b{position:static;}#yui-main,.yui-g .yui-u .yui-g{width:100%;}{width:100%;}.yui-t1 #yui-main,.yui-t2 #yui-main,.yui-t3 #yui-main{float:right;margin-left:-25em;}.yui-t4 #yui-main,.yui-t5 #yui-main,.yui-t6 #yui-main{float:left;margin-right:-25em;}.yui-t1 .yui-b{float:left;width:12.30769em;*width:12.00em;}.yui-t1 #yui-main .yui-b{margin-left:13.30769em;*margin-left:13.05em;}.yui-t2 .yui-b{float:left;width:13.8461em;*width:13.50em;}.yui-t2 #yui-main .yui-b{margin-left:14.8461em;*margin-left:14.55em;}.yui-t3 .yui-b{float:left;width:23.0769em;*width:22.50em;}.yui-t3 #yui-main .yui-b{margin-left:24.0769em;*margin-left:23.62em;}.yui-t4 .yui-b{float:right;width:13.8456em;*width:13.50em;}.yui-t4 #yui-main .yui-b{margin-right:14.8456em;*margin-right:14.55em;}.yui-t5 .yui-b{float:right;width:18.4615em;*width:18.00em;}.yui-t5 #yui-main .yui-b{margin-right:19.4615em;*margin-right:19.125em;}.yui-t6 .yui-b{float:right;width:23.0769em;*width:22.50em;}.yui-t6 #yui-main .yui-b{margin-right:24.0769em;*margin-right:23.62em;}.yui-t7 #yui-main .yui-b{display:block;margin:0 0 1em 0;}#yui-main .yui-b{float:none;width:auto;}.yui-gb .yui-u,.yui-g .yui-gb .yui-u,.yui-gb .yui-g,.yui-gb .yui-gb,.yui-gb .yui-gc,.yui-gb .yui-gd,.yui-gb .yui-ge,.yui-gb .yui-gf,.yui-gc .yui-u,.yui-gc .yui-g,.yui-gd .yui-u{float:left;}.yui-g .yui-u,.yui-g .yui-g,.yui-g .yui-gb,.yui-g .yui-gc,.yui-g .yui-gd,.yui-g .yui-ge,.yui-g .yui-gf,.yui-gc .yui-u,.yui-gd .yui-g,.yui-g .yui-gc .yui-u,.yui-ge .yui-u,.yui-ge .yui-g,.yui-gf .yui-g,.yui-gf .yui-u{float:right;}.yui-g div.first,.yui-gb div.first,.yui-gc div.first,.yui-gd div.first,.yui-ge div.first,.yui-gf div.first,.yui-g .yui-gc div.first,.yui-g .yui-ge div.first,.yui-gc div.first div.first{float:left;}.yui-g .yui-u,.yui-g .yui-g,.yui-g .yui-gb,.yui-g .yui-gc,.yui-g .yui-gd,.yui-g .yui-ge,.yui-g .yui-gf{width:49.1%;}.yui-gb .yui-u,.yui-g .yui-gb .yui-u,.yui-gb .yui-g,.yui-gb .yui-gb,.yui-gb .yui-gc,.yui-gb .yui-gd,.yui-gb .yui-ge,.yui-gb .yui-gf,.yui-gc .yui-u,.yui-gc .yui-g,.yui-gd .yui-u{width:32%;margin-left:1.99%;}.yui-gb .yui-u{*margin-left:1.9%;*width:31.9%;}.yui-gc div.first,.yui-gd .yui-u{width:66%;}.yui-gd div.first{width:32%;}.yui-ge div.first,.yui-gf .yui-u{width:74.2%;}.yui-ge .yui-u,.yui-gf div.first{width:24%;}.yui-g .yui-gb div.first,.yui-gb div.first,.yui-gc div.first,.yui-gd div.first{margin-left:0;}.yui-g .yui-g .yui-u,.yui-gb .yui-g .yui-u,.yui-gc .yui-g .yui-u,.yui-gd .yui-g .yui-u,.yui-ge .yui-g .yui-u,.yui-gf .yui-g .yui-u{width:49%;*width:48.1%;*margin-left:0;}.yui-g .yui-g .yui-u{width:48.1%;}.yui-g .yui-gb div.first,.yui-gb .yui-gb div.first{*margin-right:0;*width:32%;_width:31.7%;}.yui-g .yui-gc div.first,.yui-gd .yui-g{width:66%;}.yui-gb .yui-g div.first{*margin-right:4%;_margin-right:1.3%;}.yui-gb .yui-gc div.first,.yui-gb .yui-gd div.first{*margin-right:0;}.yui-gb .yui-gb .yui-u,.yui-gb .yui-gc .yui-u{*margin-left:1.8%;_margin-left:4%;}.yui-g .yui-gb .yui-u{_margin-left:1.0%;}.yui-gb .yui-gd .yui-u{*width:66%;_width:61.2%;}.yui-gb .yui-gd div.first{*width:31%;_width:29.5%;}.yui-g .yui-gc .yui-u,.yui-gb .yui-gc .yui-u{width:32%;_float:right;margin-right:0;_margin-left:0;}.yui-gb .yui-gc div.first{width:66%;*float:left;*margin-left:0;}.yui-gb .yui-ge .yui-u,.yui-gb .yui-gf .yui-u{margin:0;}.yui-gb .yui-gb .yui-u{_margin-left:.7%;}.yui-gb .yui-g div.first,.yui-gb .yui-gb div.first{*margin-left:0;}.yui-gc .yui-g .yui-u,.yui-gd .yui-g .yui-u{*width:48.1%;*margin-left:0;} .yui-gb .yui-gd div.first{width:32%;}.yui-g .yui-gd div.first{_width:29.9%;}.yui-ge .yui-g{width:24%;}.yui-gf .yui-g{width:74.2%;}.yui-gb .yui-ge div.yui-u,.yui-gb .yui-gf div.yui-u{float:right;}.yui-gb .yui-ge div.first,.yui-gb .yui-gf div.first{float:left;}.yui-gb .yui-ge .yui-u,.yui-gb .yui-gf div.first{*width:24%;_width:20%;}.yui-gb .yui-ge div.first,.yui-gb .yui-gf .yui-u{*width:73.5%;_width:65.5%;}.yui-ge div.first .yui-gd .yui-u{width:65%;}.yui-ge div.first .yui-gd div.first{width:32%;}#bd:after,.yui-g:after,.yui-gb:after,.yui-gc:after,.yui-gd:after,.yui-ge:after,.yui-gf:after{content:".";display:block;height:0;clear:both;visibility:hidden;}#bd,.yui-g,.yui-gb,.yui-gc,.yui-gd,.yui-ge,.yui-gf{zoom:1;}</style>
+    <style type="text/css">/*
+Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.6.0
+*/
+h1{font-size:138.5%;}h2{font-size:123.1%;}h3{font-size:108%;}h1,h2,h3{margin:1em 0;}h1,h2,h3,h4,h5,h6,strong{font-weight:bold;}abbr,acronym{border-bottom:1px dotted #000;cursor:help;} em{font-style:italic;}blockquote,ul,ol,dl{margin:1em;}ol,ul,dl{margin-left:2em;}ol li{list-style:decimal outside;}ul li{list-style:disc outside;}dl dd{margin-left:1em;}th,td{border:1px solid #000;padding:.5em;}th{font-weight:bold;text-align:center;}caption{margin-bottom:.5em;text-align:center;}p,fieldset,table,pre{margin-bottom:1em;}input[type=text],input[type=password],textarea{width:12.25em;*width:11.9em;}
+</style><meta content="Taku Arakaki" name="author">
+    <meta content="BlueGriffon wysiwyg editor" name="generator">
+  </head>
+  <body>
+    <div class="yui-t1" id="doc3">
+      <div id="hd">
+        <h1>apt-cacherでの改善結果</h1>
+        <span style="font-weight: bold; color: #993300;">Controlerノード＋Computeノード
+          合わせて：　89 + 28 = 117　秒の改善</span><br>
+        <p> </p>
+        <table border="0" cellpadding="0" cellspacing="0" width="1004">
+          <colgroup><col style="width:54pt" span="6" width="72"> <col style="mso-width-source:userset;mso-width-alt:18304;width:429pt"
+              width="572"> </colgroup>
+          <tbody>
+            <tr style="height:13.5pt" height="18">
+              <td rowspan="2" class="xl72" style="border-bottom: 0.5pt solid black; height: 27pt; width: 54pt; background-color: #33cc00;"
+                height="36" width="72"><span style="font-weight: bold;">ノード</span></td>
+              <td colspan="2" class="xl74" style="border-left: medium none; width: 108pt; background-color: #33cc00;"
+                width="144"><span style="font-weight: bold;">キャッシュ無</span></td>
+              <td colspan="2" class="xl75" style="border-right: 0.5pt solid black; border-left: medium none; width: 108pt; background-color: #33cc00;"
+                width="144"><span style="font-weight: bold;">キャッシュ有</span></td>
+              <td rowspan="2" class="xl72" style="border-bottom: 0.5pt solid black; width: 20px; background-color: #33cc00;"
+                width="72"><span style="font-weight: bold;">時間差</span></td>
+              <td rowspan="2" class="xl72" style="border-bottom: 0.5pt solid black; width: 429pt; background-color: #33cc00;"
+                width="572"><span style="font-weight: bold;">ログ</span></td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl68" style="height: 13.5pt; border-top: medium none; border-left: medium none; background-color: #33cc00;"
+                height="18"><span style="font-weight: bold;">時間</span></td>
+              <td class="xl68" style="border-top: medium none; border-left: medium none; background-color: #33cc00;"><span
+                  style="font-weight: bold;">処理時間</span></td>
+              <td class="xl68" style="border-top: medium none; border-left: medium none; background-color: #33cc00;"><span
+                  style="font-weight: bold;">時間</span></td>
+              <td class="xl68" style="border-top: medium none; border-left: medium none; background-color: #33cc00;"><span
+                  style="font-weight: bold;">処理時間</span></td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td rowspan="114" class="xl80" style="border-bottom: 0.5pt solid black; height: 1917pt; border-top: medium none; width: 54pt; background-color: #33ccff;"
+                height="2556" width="72"><span style="font-weight: bold;">Controler
+                  ノード</span></td>
+              <td class="xl66" style="border-top: medium none; border-left: medium none; margin-left: -67px;"
+                align="right">17:44:30</td>
+              <td class="xl66" style="border-top: medium none; border-left: medium none; margin-left: -51px;"
+                align="right">0:00:02</td>
+              <td class="xl66" style="border-top: medium none; border-left: medium none; margin-left: -67px;"
+                align="right">11:21:10</td>
+              <td class="xl66" style="border-top: medium none; border-left: medium none; width: 44px; margin-left: -49px;"
+                align="right">0:00:02</td>
+              <td class="xl65" style="border-top: medium none; border-left: medium none; width: 27px; margin-left: -104px;"
+                align="right">0</td>
+              <td class="xl67" style="border-top: medium none; border-left: medium none; width: 480px; margin-left: -61px;"
+                width="572">INFO: Storing updated cookbooks/openssh/metadata.rb
+                in the cache.</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:44:32</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:21:12</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: KeystoneCredentials light-weight provider
+                already initialized -- overriding!</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:44:32</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:05</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:21:12</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-2</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[autoconf] action install
+                (build-essential::debian line 40)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:44:37</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:21:15</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[binutils-doc] action
+                install (build-essential::debian line 40)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:44:39</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:21:17</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[bison] action install
+                (build-essential::debian line 40)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:44:42</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:23</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:21:19</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:13</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-10</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[build-essential] action
+                install (build-essential::debian line 40)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:45:05</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:21:32</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[flex] action install
+                (build-essential::debian line 40)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:45:07</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:12</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:21:35</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:06</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-6</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[mysql-client] action
+                install (mysql::client line 46)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:45:19</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:05</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:21:41</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-2</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[libmysqlclient-dev] action
+                install (mysql::client line 46)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:45:24</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:13</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:21:44</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:12</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing chef_gem[mysql] action install
+                (mysql::ruby line 31)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:45:37</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:21:56</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: *** I AM FIRST MYSQL MASTER - SETTING
+                PASSWORDS ***</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:45:37</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:21:57</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:01</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing chef_gem[chef-rewind] action
+                install (rabbitmq-openstack::server line 22)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:45:39</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:21:58</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: I am the only rabbitmq node - setting erlang
+                cookie myself</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:45:42</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:22:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:01</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[install-key 53E8EA35]
+                action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 28)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:45:44</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:22:03</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[install-key 53E8EA35] ran successfully</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:45:44</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:22:04</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:12</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">3</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 102)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:45:53</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:22:16</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:45:53</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:22:16</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">2</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (apt::default line 29)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:46:01</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:22:26</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:46:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:22:28</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 102)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:46:12</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:22:38</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:46:12</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:22:38</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">2</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (apt::default line 29)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:46:20</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:22:48</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:46:20</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:22:48</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:12</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">3</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 102)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:46:29</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:23:00</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:46:29</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:23:00</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:11</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">3</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (apt::default line 29)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:46:37</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:23:11</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:46:38</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:23:12</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[ntp] action install
+                (ntp::default line 21)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:46:42</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:23:15</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[ntpdate] action install
+                (ntp::default line 21)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:46:42</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:05</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:23:16</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-3</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[sos] action install
+                (sosreport::default line 27)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:46:47</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:23:18</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing
+                cookbook_file[/usr/lib/python2.6/site-packages/sos/plugins/openstack.py]
+                action create (sosreport::default line 33)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:46:48</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:13</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:23:19</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-4</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[collectd-core] action
+                install (collectd::default line 27)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:47:01</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:23:28</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[collectd] action enable
+                (collectd::default line 33)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:47:08</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:24</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:23:36</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:16</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-8</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[mysql-server] action
+                install (mysql::server line 94)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:47:32</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:23:52</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: package[mysql-server] sending start action to
+                service[mysql] (immediate)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:47:33</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:23:53</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[mysql] action restart
+                (mysql::server line 218)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:47:36</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:23:55</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: service[mysql] restarted</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:47:36</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:23:56</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[monit] action install
+                (monit::server line 29)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:47:39</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:23:58</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing template[/etc/default/monit] action
+                create (monit::server line 34)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:47:41</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:20</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:24:00</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-12</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[erlang-nox] action install
+                (erlang::package line 28)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:48:01</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:24:08</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[erlang-dev] action install
+                (erlang::package line 29)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:48:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:06</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:24:09</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:05</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[rabbitmq-server] action
+                install (rabbitmq::default line 31)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:48:08</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:24:14</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing directory[/var/lib/rabbitmq/mnesia]
+                action create (rabbitmq::default line 75)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:48:11</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:24:16</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[memcached] action install
+                (memcached::default line 25)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:48:14</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:24:19</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:01</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[libmemcache-dev] action
+                install (memcached::default line 29)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:48:16</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:24:20</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[memcached] action nothing
+                (memcached::default line 47)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:48:16</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:14</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:24:21</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-5</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[python-keystone] action
+                install (keystone::keystone-common line 35)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:48:30</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:06</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:24:30</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">2</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[keystone] action install
+                (keystone::keystone-common line 35)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:48:36</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:24:38</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[python-keystoneclient]
+                action install (keystone::keystone-common line 35)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:48:36</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:24:38</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:01</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[python-ldap] action install
+                (keystone::keystone-common line 35)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:48:38</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:24:39</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[python-mysqldb] action
+                install (keystone::keystone-common line 35)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:48:40</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:24:41</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[Keystone: sleep] action
+                nothing (keystone::keystone-common line 45)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:48:40</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:24:41</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[Keystone: sleep] action run
+                (keystone::keystone-common line 45)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:48:50</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:24:51</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[Keystone: sleep] ran successfully</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:48:50</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:24:51</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[Keystone: sleep] action run
+                (keystone::keystone-common line 45)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:49:00</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:25:01</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[Keystone: sleep] ran successfully</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:49:00</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:25:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:01</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[keystone-manage db_sync]
+                action run (keystone::setup line 53)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:49:02</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:25:03</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[keystone-manage db_sync] ran
+                successfully</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:49:06</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:25:06</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[glance] action install
+                (glance::glance-common line 42)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:49:16</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:05</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:25:15</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-3</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[python-swift] action
+                install (glance::glance-common line 42)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:49:21</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:25:17</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[python-prettytable] action
+                install (glance::glance-common line 42)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:49:23</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:25:20</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:01</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[glance-manage db_sync]
+                action run (glance::setup line 63)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:49:25</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:25:21</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[glance-manage db_sync] ran
+                successfully</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:49:28</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:25:24</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[pssh] action install
+                (/var/chef/cache/cookbooks/dsh/providers/group.rb line 33)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:49:31</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:25:27</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing directory[/root/.ssh] action create
+                (/var/chef/cache/cookbooks/dsh/providers/group.rb line 195)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:49:33</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:24</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:25:29</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:21</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-3</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-common] action install
+                (nova::nova-common line 39)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:49:57</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:25:50</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[python-nova] action install
+                (nova::nova-common line 39)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:01</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:25:54</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[nova-manage db sync] action
+                run (nova::nova-setup line 52)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:10</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:04</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[nova-manage db sync] ran successfully</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:50:10</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:04</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[Creating network: public]
+                action run
+                (/var/chef/cache/cookbooks/nova-network/providers/networks.rb
+                line 27)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:12</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:07</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[Creating network: public] ran
+                successfully</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:13</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:08</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-scheduler] action
+                install (nova::scheduler line 32)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:16</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:10</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[nova-scheduler] action
+                enable (nova::scheduler line 38)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:18</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:11</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-conductor] action
+                install (nova::nova-conductor line 25)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:20</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:14</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[nova-conductor] action
+                enable (nova::nova-conductor line 31)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:22</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:15</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-api-ec2] action
+                install (nova::api-ec2 line 41)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:25</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:17</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[nova-api-ec2] action enable
+                (nova::api-ec2 line 47)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:50:26</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:19</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-2</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-api-os-compute] action
+                install (nova::api-os-compute line 41)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:50:30</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:21</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[nova-api-os-compute] action
+                enable (nova::api-os-compute line 47)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:31</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:11</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:22</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:06</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-5</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[cinder-common] action
+                install (cinder::cinder-setup line 62)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:42</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:28</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[cinder-api] action install
+                (cinder::cinder-setup line 62)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:50:44</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:30</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[python-cinderclient] action
+                install (cinder::cinder-common line 23)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:50:48</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:34</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[cinder-scheduler] action
+                install (cinder::cinder-scheduler line 23)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:50:51</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:37</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[cinder-scheduler] action
+                enable (cinder::cinder-scheduler line 31)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:52</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:38</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-cert] action install
+                (nova::nova-cert line 24)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:55</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:40</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[nova-cert] action enable
+                (nova::nova-cert line 30)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:50:55</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:12</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:40</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:06</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-6</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[novnc] action install
+                (nova::vncproxy line 25)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:51:07</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:46</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[websockify] action install
+                (nova::vncproxy line 25)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:51:07</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:46</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-novncproxy] action
+                install (nova::vncproxy line 25)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:51:10</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:48</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-consoleauth] action
+                install (nova::vncproxy line 33)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:51:13</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:51</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[nova-novncproxy] action
+                enable (nova::vncproxy line 39)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:51:15</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:07</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:26:53</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:06</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[apache2] action install
+                (apache2::default line 20)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:51:22</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:26:59</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[apache2] action enable
+                (apache2::default line 24)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:51:25</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:27:01</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[libapache2-mod-wsgi] action
+                install (apache2::mod_wsgi line 23)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:51:29</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:27:05</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing file[/etc/apache2/conf.d/wsgi.conf]
+                action delete (apache2::mod_wsgi line 33)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:51:29</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:13</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:27:06</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-10</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: package[lessc] is a virtual package,<span style="mso-spacerun:yes">&nbsp;
+                  </span>actually acting on package[node-less]</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:51:42</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:19</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:27:09</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:11</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-8</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[openstack-dashboard] action
+                install (horizon::server line 104)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:52:01</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:27:20</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[python-mysqldb] action
+                install (horizon::server line 104)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:52:05</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:27:24</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:01</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing
+                package[openstack-dashboard-ubuntu-theme] action purge
+                (horizon::server line 213)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:52:07</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:27:25</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: package[openstack-dashboard-ubuntu-theme]
+                purged</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:52:12</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:27:30</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[keepalived] action install
+                (keepalived::default line 23)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:52:15</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:27:33</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[reload-keepalived] action
+                nothing (keepalived::default line 27)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:52:16</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:27:33</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[haproxy] action install
+                (haproxy::default line 40)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">17:52:19</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:27:36</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing template[/etc/default/haproxy]
+                action create (haproxy::default line 46)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:52:21</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:27:37</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[ntp] action restart
+                (ntp::default line 33)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:52:23</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:27:40</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: service[ntp] restarted</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:52:23</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:27:40</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[collectd] action restart
+                (collectd::default line 33)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:52:25</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:27:42</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: service[collectd] restarted</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:52:26</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:33</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:27:43</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:33</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[rabbitmq-server] action
+                restart (rabbitmq::default line 87)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:52:59</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:28:16</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: service[rabbitmq-server] restarted</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:53:01</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:28:18</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[apache2] action restart
+                (apache2::default line 221)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:53:04</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:28:21</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: service[apache2] restarted</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:53:04</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:28:21</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[apache2] action restart
+                (apache2::default line 24)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">17:53:07</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:28:23</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: service[apache2] restarted</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td colspan="5" rowspan="1" style="height: 13.5pt; background-color: #ffcc00;"
+                height="18"><span style="font-weight: bold;">短縮時間</span></td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-89</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="ft">
+        <p><br>
+        </p>
+        <p> </p>
+        <table border="0" cellpadding="0" cellspacing="0" width="1004">
+          <colgroup><col style="width:54pt" span="6" width="72"> <col style="mso-width-source:userset;mso-width-alt:18304;width:429pt"
+              width="572"> </colgroup>
+          <tbody>
+            <tr style="height:13.5pt" height="18">
+              <td rowspan="2" class="xl72" style="border-bottom: 0.5pt solid black; height: 27pt; width: 54pt; background-color: #33cc00;"
+                height="36" width="72"><span style="font-weight: bold;">ノード</span></td>
+              <td colspan="2" class="xl74" style="border-left: medium none; width: 108pt; background-color: #33cc00;"
+                width="144"><span style="font-weight: bold;">キャッシュ無</span></td>
+              <td colspan="2" class="xl75" style="border-right: 0.5pt solid black; border-left: medium none; width: 108pt; background-color: #33cc00;"
+                width="144"><span style="font-weight: bold;">キャッシュ有</span></td>
+              <td rowspan="2" class="xl72" style="border-bottom: 0.5pt solid black; width: 54pt; background-color: #33cc00;"
+                width="72"><span style="font-weight: bold;">時間差</span></td>
+              <td rowspan="2" class="xl72" style="border-bottom: 0.5pt solid black; width: 429pt; background-color: #33cc00;"
+                width="572"><span style="font-weight: bold;">ログ</span></td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl68" style="height: 13.5pt; border-top: medium none; border-left: medium none; background-color: #33cc00;"
+                height="18"><span style="font-weight: bold;">時間</span></td>
+              <td class="xl68" style="border-top: medium none; border-left: medium none; background-color: #33cc00;"><span
+                  style="font-weight: bold;">処理時間</span></td>
+              <td class="xl68" style="border-top: medium none; border-left: medium none; background-color: #33cc00;"><span
+                  style="font-weight: bold;">時間</span></td>
+              <td class="xl68" style="border-top: medium none; border-left: medium none; background-color: #33cc00;"><span
+                  style="font-weight: bold;">処理時間</span></td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td rowspan="44" class="xl77" style="border-bottom: 0.5pt solid black; height: 742.5pt; border-top: medium none; width: 54pt; background-color: #33ccff;"
+                height="990" width="72"><span style="font-weight: bold;">Compute
+                  ノード</span></td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">18:01:15</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:33:20</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Storing updated cookbooks/openssh/metadata.rb
+                in the cache.</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:01:17</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:33:22</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: NovaNetworkNetworks light-weight provider
+                already initialized -- overriding!</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">18:01:17</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:33:22</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: osops-utils/autoetchosts: moving
+                /tmp/hosts20130812-13769-ugabfv to /etc/hosts</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:01:19</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:33:24</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get-update] action run
+                (apt::default line 22)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">18:01:19</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:01</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:33:24</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[install-key 53E8EA35]
+                action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 28)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:01:20</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:33:26</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[install-key 53E8EA35] ran successfully</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">18:01:21</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:33:26</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">2</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 102)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:01:29</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:33:36</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:01:29</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:33:36</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (apt::default line 29)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:01:38</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:33:45</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">18:01:39</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:33:46</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 102)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:01:48</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:33:55</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:01:48</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:33:55</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (apt::default line 29)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:01:56</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:34:04</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">18:01:56</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:34:04</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:13</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">3</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 102)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:02:06</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:34:17</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:02:06</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:34:17</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:11</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">2</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing execute[apt-get update] action run
+                (apt::default line 29)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:02:15</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:34:28</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: execute[apt-get update] ran successfully</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:02:15</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:34:29</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[ntp] action install
+                (ntp::default line 21)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:02:19</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:34:32</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[ntpdate] action install
+                (ntp::default line 21)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:02:20</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:05</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:34:32</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-3</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[sos] action install
+                (sosreport::default line 27)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">18:02:25</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:34:34</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing
+                cookbook_file[/usr/lib/python2.6/site-packages/sos/plugins/openstack.py]
+                action create (sosreport::default line 33)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:02:26</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:13</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:34:35</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:07</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-6</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[collectd-core] action
+                install (collectd::default line 27)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:02:39</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:34:42</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[collectd] action enable
+                (collectd::default line 33)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:02:42</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:41</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:34:45</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:32</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-9</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-common] action install
+                (nova::nova-common line 39)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:03:23</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:35:17</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[python-nova] action install
+                (nova::nova-common line 39)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:03:23</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:01</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:35:17</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Creating /etc/nova/nova.conf</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">18:03:24</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:35:19</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: #### [{"network"=&gt;"management",
+                "path"=&gt;"/", "scheme"=&gt;"http", "port"=&gt;11211,
+                "host"=&gt;"192.168.100.12",
+                "uri"=&gt;"http://192.168.100.12:11211/"}]</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">18:03:27</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:35:20</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[pssh] action install
+                (/var/chef/cache/cookbooks/dsh/providers/group.rb line 33)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">18:03:29</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:35:23</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing directory[/var/lib/nova/.ssh]
+                action create (/var/chef/cache/cookbooks/dsh/providers/group.rb
+                line 195)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:03:30</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:35:24</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:01</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-api-metadata] action
+                install (nova::api-metadata line 37)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:03:32</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:35:25</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[nova-api-metadata] action
+                enable (nova::api-metadata line 43)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">18:03:33</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:35:26</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-network] action
+                install (nova-network::nova-network line 25)</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl69" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">18:03:36</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:35:28</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[nova-network] action enable
+                (nova-network::nova-network line 31)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:03:36</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:35:29</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-1</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[monit] action install
+                (monit::server line 29)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:03:39</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:35:31</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing template[/etc/default/monit] action
+                create (monit::server line 34)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:03:40</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:28</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:35:31</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:11</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-17</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-compute] action
+                install (nova::compute line 40)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:04:08</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:35:42</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[nova-compute-kvm] action
+                install (nova::compute line 40)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:04:08</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:35:42</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing package[pm-utils] action install
+                (nova::libvirt line 23)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:04:11</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:35:45</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing bash[create libvirtd group] action
+                run (nova::libvirt line 30)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:04:15</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:35:49</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[ntp] action restart
+                (ntp::default line 33)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:04:17</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:35:51</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: service[ntp] restarted</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:04:17</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">11:35:51</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">0</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: Processing service[collectd] action restart
+                (collectd::default line 33)</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">18:04:19</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none" align="right">11:35:53</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl69" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none;width:429pt"
+                width="572">INFO: service[collectd] restarted</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td colspan="5" rowspan="1" style="height: 13.5pt; background-color: #ffcc00;"
+                height="18"><span style="font-weight: bold;">短縮時間</span></td>
+              <td class="xl65" style="border-top:none;border-left:none" align="right">-28</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="ft">
+        <p>Copyright © 2013 OKINAWA OPEN LABORATORY All Rights Reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>

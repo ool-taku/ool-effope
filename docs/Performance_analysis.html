@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="ja">
+  <head>
+    <meta content="text/html; charset=utf-8" http-equiv="content-type">
+    <title>Infrastructureインストール時間分析</title>
+    <style type="text/css">/*
+Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.6.0
+*/
+html{color:#000;background:#FFF;}body,div,dl,dt,dd,ul,ol,li,h1,h2,h3,h4,h5,h6,pre,code,form,fieldset,legend,input,textarea,p,blockquote,th,td{margin:0;padding:0;}table{border-collapse:collapse;border-spacing:0;}fieldset,img{border:0;}address,caption,cite,code,dfn,em,strong,th,var{font-style:normal;font-weight:normal;}li{list-style:none;}caption,th{text-align:left;}h1,h2,h3,h4,h5,h6{font-size:100%;font-weight:normal;}q:before,q:after{content:'';}abbr,acronym{border:0;font-variant:normal;}sup{vertical-align:text-top;}sub{vertical-align:text-bottom;}input,textarea,select{font-family:inherit;font-size:inherit;font-weight:inherit;}input,textarea,select{*font-size:100%;}legend{color:#000;}del,ins{text-decoration:none;}body{font:13px/1.231 arial,helvetica,clean,sans-serif;*font-size:small;*font:x-small;}select,input,button,textarea{font:99% arial,helvetica,clean,sans-serif;}table{font-size:inherit;font:100%;}pre,code,kbd,samp,tt{font-family:monospace;*font-size:108%;line-height:100%;}body{text-align:center;}#ft{clear:both;}#doc,#doc2,#doc3,#doc4,.yui-t1,.yui-t2,.yui-t3,.yui-t4,.yui-t5,.yui-t6,.yui-t7{margin:auto;text-align:left;width:57.69em;*width:56.25em;min-width:750px;}#doc2{width:73.076em;*width:71.25em;}#doc3{margin:auto 10px;width:auto;}#doc4{width:74.923em;*width:73.05em;}.yui-b{position:relative;}.yui-b{_position:static;}#yui-main .yui-b{position:static;}#yui-main,.yui-g .yui-u .yui-g{width:100%;}{width:100%;}.yui-t1 #yui-main,.yui-t2 #yui-main,.yui-t3 #yui-main{float:right;margin-left:-25em;}.yui-t4 #yui-main,.yui-t5 #yui-main,.yui-t6 #yui-main{float:left;margin-right:-25em;}.yui-t1 .yui-b{float:left;width:12.30769em;*width:12.00em;}.yui-t1 #yui-main .yui-b{margin-left:13.30769em;*margin-left:13.05em;}.yui-t2 .yui-b{float:left;width:13.8461em;*width:13.50em;}.yui-t2 #yui-main .yui-b{margin-left:14.8461em;*margin-left:14.55em;}.yui-t3 .yui-b{float:left;width:23.0769em;*width:22.50em;}.yui-t3 #yui-main .yui-b{margin-left:24.0769em;*margin-left:23.62em;}.yui-t4 .yui-b{float:right;width:13.8456em;*width:13.50em;}.yui-t4 #yui-main .yui-b{margin-right:14.8456em;*margin-right:14.55em;}.yui-t5 .yui-b{float:right;width:18.4615em;*width:18.00em;}.yui-t5 #yui-main .yui-b{margin-right:19.4615em;*margin-right:19.125em;}.yui-t6 .yui-b{float:right;width:23.0769em;*width:22.50em;}.yui-t6 #yui-main .yui-b{margin-right:24.0769em;*margin-right:23.62em;}.yui-t7 #yui-main .yui-b{display:block;margin:0 0 1em 0;}#yui-main .yui-b{float:none;width:auto;}.yui-gb .yui-u,.yui-g .yui-gb .yui-u,.yui-gb .yui-g,.yui-gb .yui-gb,.yui-gb .yui-gc,.yui-gb .yui-gd,.yui-gb .yui-ge,.yui-gb .yui-gf,.yui-gc .yui-u,.yui-gc .yui-g,.yui-gd .yui-u{float:left;}.yui-g .yui-u,.yui-g .yui-g,.yui-g .yui-gb,.yui-g .yui-gc,.yui-g .yui-gd,.yui-g .yui-ge,.yui-g .yui-gf,.yui-gc .yui-u,.yui-gd .yui-g,.yui-g .yui-gc .yui-u,.yui-ge .yui-u,.yui-ge .yui-g,.yui-gf .yui-g,.yui-gf .yui-u{float:right;}.yui-g div.first,.yui-gb div.first,.yui-gc div.first,.yui-gd div.first,.yui-ge div.first,.yui-gf div.first,.yui-g .yui-gc div.first,.yui-g .yui-ge div.first,.yui-gc div.first div.first{float:left;}.yui-g .yui-u,.yui-g .yui-g,.yui-g .yui-gb,.yui-g .yui-gc,.yui-g .yui-gd,.yui-g .yui-ge,.yui-g .yui-gf{width:49.1%;}.yui-gb .yui-u,.yui-g .yui-gb .yui-u,.yui-gb .yui-g,.yui-gb .yui-gb,.yui-gb .yui-gc,.yui-gb .yui-gd,.yui-gb .yui-ge,.yui-gb .yui-gf,.yui-gc .yui-u,.yui-gc .yui-g,.yui-gd .yui-u{width:32%;margin-left:1.99%;}.yui-gb .yui-u{*margin-left:1.9%;*width:31.9%;}.yui-gc div.first,.yui-gd .yui-u{width:66%;}.yui-gd div.first{width:32%;}.yui-ge div.first,.yui-gf .yui-u{width:74.2%;}.yui-ge .yui-u,.yui-gf div.first{width:24%;}.yui-g .yui-gb div.first,.yui-gb div.first,.yui-gc div.first,.yui-gd div.first{margin-left:0;}.yui-g .yui-g .yui-u,.yui-gb .yui-g .yui-u,.yui-gc .yui-g .yui-u,.yui-gd .yui-g .yui-u,.yui-ge .yui-g .yui-u,.yui-gf .yui-g .yui-u{width:49%;*width:48.1%;*margin-left:0;}.yui-g .yui-g .yui-u{width:48.1%;}.yui-g .yui-gb div.first,.yui-gb .yui-gb div.first{*margin-right:0;*width:32%;_width:31.7%;}.yui-g .yui-gc div.first,.yui-gd .yui-g{width:66%;}.yui-gb .yui-g div.first{*margin-right:4%;_margin-right:1.3%;}.yui-gb .yui-gc div.first,.yui-gb .yui-gd div.first{*margin-right:0;}.yui-gb .yui-gb .yui-u,.yui-gb .yui-gc .yui-u{*margin-left:1.8%;_margin-left:4%;}.yui-g .yui-gb .yui-u{_margin-left:1.0%;}.yui-gb .yui-gd .yui-u{*width:66%;_width:61.2%;}.yui-gb .yui-gd div.first{*width:31%;_width:29.5%;}.yui-g .yui-gc .yui-u,.yui-gb .yui-gc .yui-u{width:32%;_float:right;margin-right:0;_margin-left:0;}.yui-gb .yui-gc div.first{width:66%;*float:left;*margin-left:0;}.yui-gb .yui-ge .yui-u,.yui-gb .yui-gf .yui-u{margin:0;}.yui-gb .yui-gb .yui-u{_margin-left:.7%;}.yui-gb .yui-g div.first,.yui-gb .yui-gb div.first{*margin-left:0;}.yui-gc .yui-g .yui-u,.yui-gd .yui-g .yui-u{*width:48.1%;*margin-left:0;} .yui-gb .yui-gd div.first{width:32%;}.yui-g .yui-gd div.first{_width:29.9%;}.yui-ge .yui-g{width:24%;}.yui-gf .yui-g{width:74.2%;}.yui-gb .yui-ge div.yui-u,.yui-gb .yui-gf div.yui-u{float:right;}.yui-gb .yui-ge div.first,.yui-gb .yui-gf div.first{float:left;}.yui-gb .yui-ge .yui-u,.yui-gb .yui-gf div.first{*width:24%;_width:20%;}.yui-gb .yui-ge div.first,.yui-gb .yui-gf .yui-u{*width:73.5%;_width:65.5%;}.yui-ge div.first .yui-gd .yui-u{width:65%;}.yui-ge div.first .yui-gd div.first{width:32%;}#bd:after,.yui-g:after,.yui-gb:after,.yui-gc:after,.yui-gd:after,.yui-ge:after,.yui-gf:after{content:".";display:block;height:0;clear:both;visibility:hidden;}#bd,.yui-g,.yui-gb,.yui-gc,.yui-gd,.yui-ge,.yui-gf{zoom:1;}</style>
+    <style type="text/css">/*
+Copyright (c) 2008, Yahoo! Inc. All rights reserved.
+Code licensed under the BSD License:
+http://developer.yahoo.net/yui/license.txt
+version: 2.6.0
+*/
+h1{font-size:138.5%;}h2{font-size:123.1%;}h3{font-size:108%;}h1,h2,h3{margin:1em 0;}h1,h2,h3,h4,h5,h6,strong{font-weight:bold;}abbr,acronym{border-bottom:1px dotted #000;cursor:help;} em{font-style:italic;}blockquote,ul,ol,dl{margin:1em;}ol,ul,dl{margin-left:2em;}ol li{list-style:decimal outside;}ul li{list-style:disc outside;}dl dd{margin-left:1em;}th,td{border:1px solid #000;padding:.5em;}th{font-weight:bold;text-align:center;}caption{margin-bottom:.5em;text-align:center;}p,fieldset,table,pre{margin-bottom:1em;}input[type=text],input[type=password],textarea{width:12.25em;*width:11.9em;}
+</style><meta content="Taku Arakaki" name="author">
+    <meta content="BlueGriffon wysiwyg editor" name="generator">
+  </head>
+  <body>
+    <div class="yui-t1" id="doc3">
+      <div id="hd">
+        <h1 style="width: 1000px;">OpenStackインストールログ(Infrastructure部)時間分析</h1>
+        <table style="width: 500px; height: 31px;" border="1">
+          <tbody>
+            <tr>
+              <td style="background-color: #ffcc00;">
+                OpenCenterで出力されるログが1secの解像度のため、2秒以上掛っている処理をピックアップ<br>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+        <p> </p>
+        <table style="width: 1000px;" border="0" cellpadding="0" cellspacing="0">
+          <colgroup><col style="mso-width-source:userset;mso-width-alt:2304;
+ width:54pt" span="3" width="72"> <col style="mso-width-source:userset;mso-width-alt:17664;width:414pt"
+              width="552"> <col style="mso-width-source:userset;mso-width-alt:10112;width:237pt"
+              width="316"> </colgroup>
+          <tbody>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl68" style="height: 13.5pt; width: 33px; background-color: #33ff33;"
+                height="18" width="72"><span style="font-weight: bold;">ログ<br>
+                </span></td>
+              <td class="xl68" style="border-left: medium none; width: 25px; background-color: #33ff33; margin-left: -8px;"
+                width="72"><span style="font-weight: bold;">時間</span></td>
+              <td class="xl68" style="border-left: medium none; width: 68px; background-color: #33ff33; margin-left: -39px;"
+                width="72"><span style="font-weight: bold;">処理 時間</span></td>
+              <td class="xl68" style="border-left: medium none; width: 444px; background-color: #33ff33;"
+                width="552"><span style="font-weight: bold;">ログ内容</span></td>
+              <td class="xl68" style="border-left: medium none; width: 353px; background-color: #33ff33; margin-left: -113px;"
+                width="316"><span style="font-weight: bold;">備 考</span></td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td rowspan="3" class="xl71" style="border-bottom: 0.5pt solid black; height: 40.5pt; border-top: medium none; background-color: #33ccff;"
+                height="54"><span style="font-weight: bold;">trans 9</span></td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">13:57:51</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: *** Chef 11.2.0 ***</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:57:55</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Report handlers complete</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl70" style="height:13.5pt;border-top:none;border-left:
+  none" height="18">　</td>
+              <td class="xl70" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td rowspan="114" class="xl74" style="border-bottom: 0.5pt solid black; height: 2065.5pt; border-top: medium none; background-color: #33ccff;"
+                height="2754"><span style="font-weight: bold;">trans 12</span></td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">13:58:32</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border: 0.5pt solid windowtext; background: none repeat scroll 0% 0% #bfbfbf; width: 361px;">INFO:
+                *** Chef 11.2.0 ***</td>
+              <td class="xl67" style="width: 370px; border: 0.5pt solid windowtext; background: none repeat scroll 0% 0% #bfbfbf; margin-left: -70px;"
+                width="316">　</td>
+            </tr>
+            <tr style="height:67.5pt" height="90">
+              <td class="xl66" style="height:67.5pt;border-top:none;
+  border-left:none" align="right" height="90">13:58:49</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[apt-get update] action run (mysql::ruby line
+                23)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-getで利用するファイルをキャッシュするツール(apt-cacher)を
+                利用することで、時間短縮できそう。<br>
+                ※どの程度改善できるかは実際の動作させてみないと不明</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:58:58</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[apt-get update] ran
+                successfully</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">13:58:58</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[binutils-doc] action install
+                (build-essential::default line 51)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:59:00</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:05</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[autoconf] action install
+                (build-essential::default line 58)</td>
+              <td class="xl65" style="border-top:none;border-left:none">〃</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:59:05</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[flex] action install
+                (build-essential::default line 58)</td>
+              <td class="xl65" style="border-top:none;border-left:none">〃</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:59:08</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[bison] action install
+                (build-essential::default line 58)</td>
+              <td class="xl65" style="border-top:none;border-left:none">〃</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:59:11</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:15</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[mysql-client] action install (mysql::client
+                line 46)</td>
+              <td class="xl65" style="border-top:none;border-left:none">〃</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:59:26</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:05</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[libmysqlclient-dev] action install
+                (mysql::client line 46)</td>
+              <td class="xl65" style="border-top:none;border-left:none">〃</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:59:31</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:11</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing chef_gem[mysql] action install (mysql::ruby line 36)</td>
+              <td class="xl65" style="border-top:none;border-left:none">〃</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:59:42</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: *** I AM FIRST MYSQL MASTER -
+                SETTING PASSWORDS ***</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:59:47</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[install-key 53E8EA35] action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 26)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:59:49</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[install-key 53E8EA35]
+                ran successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">13:59:49</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:07</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[apt-get update] action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 104)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">13:59:56</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[apt-get update] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">13:59:56</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[apt-get update] action run (apt::default line
+                29)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:00:04</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[apt-get update] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:00:05</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[apt-get update] action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 104)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:00:14</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[apt-get update] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:00:14</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[apt-get update] action run (apt::default line
+                29)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:00:22</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">execute[apt-get update] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:00:22</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[ntp] action install (ntp::default line 21)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:00:26</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing package[ntpdate]
+                action install (ntp::default line 21)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:00:27</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[sos] action install (sosreport::default line
+                22)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:00:31</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                apt_repository[hardy-rsyslog-ppa] action add (rsyslog::default
+                line 22)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:00:34</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:15</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[collectd-core] action install
+                (collectd::default line 27)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:00:49</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing service[collectd]
+                action nothing (collectd::default line 32)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:00:55</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:27</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[mysql-server] action install (mysql::server
+                line 94)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:01:22</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: package[mysql-server] sending
+                start action to service[mysql] (immediate)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:01:23</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                service[mysql] restarted</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:01:25</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing service[mysql]
+                action start (mysql::server line 218)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:01:26</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[monit] action install (monit::server line 64)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:01:29</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                template[/etc/default/monit] action create (monit::server line
+                71)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:01:31</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:18</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[erlang-nox] action install (erlang::package
+                line 28)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:01:49</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                package[erlang-dev] action install (erlang::package line 29)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:01:52</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[apt-get update] action run
+                (/var/chef/cache/cookbooks/apt/providers/repository.rb line 104)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:02:00</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">execute[apt-get update] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:02:00</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:07</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[rabbitmq-server] action install
+                (rabbitmq::default line 43)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:02:07</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                template[/etc/rabbitmq/rabbitmq-env.conf] action create
+                (rabbitmq::default line 90)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:02:11</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[python-mysqldb] action install
+                (keystone::server line 53)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:02:13</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:16</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[keystone] action install (keystone::server
+                line 60)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">〃</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:02:29</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                package[python-keystone] action install (keystone::server line
+                60)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:02:30</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[python-ldap] action install (keystone::server
+                line 67)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:02:32</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing execute[Keystone:
+                sleep] action nothing (keystone::server line 73)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:02:32</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[Keystone: sleep] action run (keystone::server
+                line 73)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">sleep時間を短縮可能か確認</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:02:42</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[Keystone: sleep] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:02:44</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[Keystone: sleep] action run (keystone::server
+                line 73)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">sleep時間を短縮可能か確認</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:02:54</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[Keystone: sleep] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:02:54</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[Keystone: sleep] action run (keystone::server
+                line 73)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">sleep時間を短縮可能か確認</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:03:04</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[Keystone: sleep] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:03:05</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[Keystone: sleep] action run (keystone::server
+                line 73)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">sleep時間を短縮可能か確認</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:03:15</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[Keystone: sleep] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:03:15</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[Keystone: sleep] action run (keystone::server
+                line 73)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">sleep時間を短縮可能か確認予定</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:03:25</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[Keystone: sleep] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:03:29</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:11</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[glance] action install (glance::setup line
+                79)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:03:40</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[python-swift] action install (glance::setup
+                line 79)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">〃</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:03:44</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                package[python-prettytable] action install (glance::setup line
+                79)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:03:45</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[glance-manage db_sync] action run
+                (glance::setup line 172)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:03:48</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[glance-manage
+                db_sync] ran successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:03:55</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:24</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[nova-common] action install
+                (nova::nova-common line 32)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:04:19</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                package[python-nova] action install (nova::nova-common line 32)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:04:23</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[pssh] action install
+                (/var/chef/cache/cookbooks/dsh/providers/group.rb line 33)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:04:25</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                directory[/var/lib/nova/.ssh] action create
+                (/var/chef/cache/cookbooks/dsh/providers/group.rb line 187)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:04:25</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:06</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[nova-manage db sync] action run
+                (nova::nova-setup line 47)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:04:31</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[nova-manage db sync]
+                ran successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:04:31</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[nova-manage network create --label=public]
+                action run
+                (/var/chef/cache/cookbooks/nova-network/providers/networks.rb
+                line 24)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:04:34</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[nova-manage network
+                create --label=public] ran successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:04:34</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[nova-scheduler] action install
+                (nova::scheduler line 39)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:04:38</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                service[nova-scheduler] action enable (nova::scheduler line 45)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:04:40</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[nova-api-ec2] action install (nova::api-ec2
+                line 48)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:04:43</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                service[nova-api-ec2] action enable (nova::api-ec2 line 54)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:04:44</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[nova-api-os-compute] action install
+                (nova::api-os-compute line 47)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:04:47</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                service[nova-api-os-compute] action enable (nova::api-os-compute
+                line 53)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:04:48</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing service[rsyslog] action restart (rsyslog::default
+                line 88)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:04:50</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: service[rsyslog] restarted</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:04:50</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:14</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[cinder-common] action install
+                (cinder::cinder-setup line 68)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:05:04</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[cinder-api] action install
+                (cinder::cinder-setup line 68)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">〃</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:05:06</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                package[python-cinderclient] action install
+                (cinder::cinder-setup line 68)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:05:10</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[cinder-scheduler] action install
+                (cinder::cinder-scheduler line 25)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:05:13</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                package[python-mysqldb] action install (cinder::cinder-scheduler
+                line 25)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:05:14</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[nova-cert] action install (nova::nova-cert
+                line 31)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:05:17</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing service[nova-cert]
+                action enable (nova::nova-cert line 37)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:05:18</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:11</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[novnc] action install (nova::vncproxy line
+                33)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:05:29</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                package[websockify] action install (nova::vncproxy line 33)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:05:29</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[nova-novncproxy] action install
+                (nova::vncproxy line 33)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:05:32</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[nova-consoleauth] action install
+                (nova::vncproxy line 41)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">〃</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:05:35</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                service[nova-novncproxy] action enable (nova::vncproxy line 46)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:05:37</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:09</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[apache2] action install (apache2::default
+                line 20)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:05:46</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing service[apache2]
+                action enable (apache2::default line 24)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:05:49</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[libapache2-mod-wsgi] action install
+                (apache2::mod_wsgi line 23)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:05:53</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                file[/etc/apache2/conf.d/wsgi.conf] action delete
+                (apache2::mod_wsgi line 33)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:05:54</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:11</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                package[lessc] is a virtual package, actually acting on
+                package[node-less]</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:06:05</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:21</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[openstack-dashboard] action install
+                (horizon::server line 84)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:26</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                package[python-mysqldb] action install (horizon::server line 84)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:28</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[openstack-dashboard-ubuntu-theme] action
+                purge (horizon::server line 184)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:30</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO:
+                package[openstack-dashboard-ubuntu-theme] purged</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:06:35</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[keepalived] action install
+                (keepalived::default line 20)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:39</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                directory[/etc/keepalived/conf.d] action create
+                (keepalived::default line 24)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:06:39</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing package[haproxy] action install (haproxy::default
+                line 34)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:43</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Processing
+                template[/etc/default/haproxy] action create (haproxy::default
+                line 40)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:45</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing service[ntp] action restart (ntp::default line 33)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:47</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: service[ntp] restarted</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:48</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing service[collectd] action restart (collectd::default
+                line 32)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:51</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: service[collectd] restarted</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:51</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:05</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing service[collectd] action restart (collectd::default
+                line 119)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:56</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: service[collectd] restarted</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:06:57</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:03</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing service[rabbitmq-server] action restart
+                (rabbitmq-openstack::server line 64)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:07:00</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: service[rabbitmq-server]
+                restarted</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:07:01</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing service[apache2] action restart (apache2::default
+                line 221)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:07:03</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: service[apache2] restarted</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:07:03</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing service[apache2] action restart (apache2::default
+                line 24)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:07:05</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: service[apache2] restarted</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:07:06</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Report handlers complete</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl69" style="height:13.5pt;border-top:none;border-left:
+  none" height="18">　</td>
+              <td class="xl70" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none">　</td>
+              <td class="xl70" style="border-top:none;border-left:none">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td rowspan="12" class="xl74" style="border-bottom: 0.5pt solid black; height: 229.5pt; border-top: medium none; background-color: #33ccff;"
+                height="306"><span style="font-weight: bold;">trans 15</span></td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">14:07:17</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">NFO: *** Chef 11.2.0 ***</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:07:21</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:10</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[apt-get update] action run (mysql::ruby line
+                23)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:07:31</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[apt-get update] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:07:39</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[apt-get update] action run (apt::default line
+                29)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:07:47</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[apt-get update] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:07:48</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:08</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing execute[apt-get update] action run (apt::default line
+                29)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:07:56</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: execute[apt-get update] ran
+                successfully</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:08:18</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:02</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing service[collectd] action restart (collectd::default
+                line 119)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:08:20</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: service[collectd] restarted</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:27.0pt" height="36">
+              <td class="xl66" style="height:27.0pt;border-top:none;
+  border-left:none" align="right" height="36">14:08:21</td>
+              <td class="xl66" style="border-top:none;border-left:none" align="right">0:00:04</td>
+              <td class="xl65" style="border-top:none;border-left:none">INFO:
+                Processing service[apache2] action restart (apache2::default
+                line 221)</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt"
+                width="316">apt-cacherを利用することで、時間短縮できそう。</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:08:25</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: service[apache2] restarted</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+            <tr style="height:13.5pt" height="18">
+              <td class="xl66" style="height:13.5pt;border-top:none;
+  border-left:none" align="right" height="18">14:08:25</td>
+              <td class="xl66" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">　</td>
+              <td class="xl65" style="border-top:none;border-left:none;border:.5pt solid windowtext;
+  background:#BFBFBF;mso-pattern:black none">INFO: Report handlers complete</td>
+              <td class="xl67" style="border-top:none;border-left:none;width:237pt;
+  border:.5pt solid windowtext;background:#BFBFBF;mso-pattern:black none" width="316">　</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div id="ft">
+        <p>Copyright © 2013 OKINAWA OPEN LABORATORY All Rights Reserved.</p>
+      </div>
+    </div>
+  </body>
+</html>
