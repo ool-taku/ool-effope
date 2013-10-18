@@ -1,0 +1,156 @@
+OpenCenterで使用する、OpenStackのバージョン切り替え
+についての検討
+
+＜ChefのCookbookのバージョン管理＞
+Gitでバージョン管理されいてるので、
+各バージョンのCookbookについては、Gitより取得できる。
+
+(参考)
+Grizzlyへのバージョンアップの際のGit操作は、下記のように行う。
+
+/root# git clone https://github.com/rcbops/chef-cookbooks.git
+/root# cd chef-cookbooks
+/root/chef-cookbooks# git checkout v4.0.0
+/root/chef-cookbooks# git submodule init
+/root/chef-cookbooks# git submodule sync
+/root/chef-cookbooks# git submodule update
+
+Gitのバージョンを確認したところ、下記のようになっていました。
+※grizzly、folsomが存在。
+  Grizzlyの場合にv4.0.0を使用しているので、
+  grizzlyとv4.0.0の違いについて確認が必要。
+
+  remotes/origin/HEAD -> origin/master
+  remotes/origin/ceilometer-deployment
+  remotes/origin/diablo
+  remotes/origin/folsom
+  remotes/origin/grizzly
+  remotes/origin/iso
+  remotes/origin/master
+  remotes/origin/v4.0.0
+
+
+＜Chefサーバへの登録＞
+Grizzlyへのバージョンアップの際のChefサーバへ操作は、下記のように行う。
+
+/root/chef-cookbooks# knife cookbook upload -a -o cookbooks
+/root/chef-cookbooks# knife role from file roles/*rb
+
+→ cookbookとroleをそれぞれサーバへ登録している。
+
+
+【現状の調査結果】
+Chefのファイルの構成上、
+下記対応が必要ではないかと考えます。
+かなり大規模(あちこち修正が必要)な修正となりそう。
+
+・複数バージョンを同時に利用できるようにするには、それぞれの
+  バージョンについてのCookBook及びrole(ファイル等がかぶらないように)を
+  変更する必要がある。
+・上記複数バージョンに合わせた、ロールの設定を行うように、
+  OpenCenter側の修正が必要。
+
+
+＜代替え案＞
+  プルダウン等でバージョンを切り替えられるように、
+  しておき、そのバージョンが選択されている間は、
+  ChefサーバがGrizzlyの設定となり、Grizzlyがインストールされ。
+  Folsomが選択された場合はChefサーバをFolsomの設定に変更
+  (ChefのCookbookやroleのファイルを変更)して、
+  Folsomのみがインストールされるようにする対応のほうが、
+  修正が少なく簡単ではないかと考えます。
+
+
+--------残作業----------
+・別途、対応方法がないかChefのファイル管理の詳細について確認
+
+→ 代替え案で対応する方向となったため保留。
+
+・Gitで管理されいるバージョン(Grizzlyとv4.0.0や
+  Folsom、v3.0.0で実際に使用しているCookBookの違い)に
+  ついての確認
+
+→ タグを確認したところ、OpenCenterで使用している、v3.0.1があり、
+   これを使用すれば良さそう。
+
+   Grizzly：v4.0.0の違いは存在し、
+    → Opscodeのcookbookを利用しているが、Grizzly/folsomは最新版のソースを
+       参照している。
+    → v4.0.0/v3.0.1は、該当バージョンリリース時のOpscodeのcookbookのソースを
+       利用している。
+
+・Grizzlyへのバージョンアップの手順で、Grizzly<->Folsomの
+  切り替えができるか。
+
+→ 一部手順を追加することで対応可能であることを確認した。
+
+   Grizzly -> Folsomへ変更する場合、CookBookの新しいバージョン
+   (Grizzly用)が使用されるた場合があり、不整合が発生しエラーとなる。
+   そのため、Cookbook変更の際に、変更前のCookbookを削除することで、
+   エラーが発生せず。バージョンの変更が行えるこを確認した。
+
+
+
+以下、対応の見積もり
+
+　規模：350Line
+　工数：15日
+
+　＜前提条件＞
+　・ChefサーバのアイコンメニューからCookBookのバージョンを変更する
+　・OpenCenterのDashBard上に、現在のCookBookのバージョンを表示する。
+　・ドラッグ＆ドロップした操作を行った場合、現在表示されているCookBookの
+    バージョンでインストールされる。
+    (すでに別のバージョンで構築されている環境に、ドロップした場合
+     バージョン不整合が発生する)
+    ※各環境毎にバージョンを表示することは難しそうなので、
+      NovaCluster作成時に、どのバージョンを利用するのか判るように
+      命名することで、極力間違わないように運用で対応。
+
+　＜主な修正内容＞
+・CookBookのバージョン変更のためメニュー定義追加
+・変更用のシェルスクリプト作成
+・変更用シェルスクリプトの呼びたし処理追加
+・DashboardへのOpenStackのバージョン表示追加
+
+　＜修正ソース＞
+opencenter-master\opencenter\db\migrate_repo\versions\001_initial_data.py
+opencenter-master\opencenter\db\migrate_repo\versions\change_cookbooks.json (新規作成)
+opencenter-master\opencenter\db\migrate_repo\versions\change_cookbooks.criteria (新規作成)
+
+→ 初期データベースを作成する関連ファイル、今回はDBに直接修正を加えるため、
+   修正は不要であるが変更は行っておく。 (動作確認は行えない)
+   また、一通りの動作確認後にパッチ等でDBに変更を行うスクリプト等の作成を検討する。
+
+→ DBはOpencenterサーバ側
+/usr/share/opencenter/opencenter.db
+
+
+opencenter-agent-master\opencenteragent\plugins\lib\bash\chef\cookbook-change.sh (新規作成)
+opencenter-agent-master\opencenteragent\plugins\lib\bash\chef\cookbook-functions.sh
+opencenter-agent-master\opencenteragent\plugins\output\plugin_chef.py
+
+/usr/share/opencenter-agent/plugins/lib/bash/chef/cookbook-functions.sh
+
+
+→ 
+opencenter-agent-master\opencenteragent\plugins\lib\bash\chef\
+cookbook-grizzly_dl.sh
+cookbook-functions.sh
+
+opencenter-agent-master\opencenteragent\plugins\output
+plugin_chef.py
+
+
+
+opencenter-client-master\opencenterclient\shell.py
+opencenter-dashboard-master\views\templates.jade
+opencenter-dashboard-master\source\coffee\dashboard.coffee
+opencenter-dashboard-master\source\coffee\index.coffee
+
+→ 表示の変更については、Python、シェルスクリプトが動作している
+   Chefサーバから、DBが直接更新できないため、
+   CLIを利用し更新対応を行うため、上記ファイルの変更は
+   不要となった。
+
+以上
